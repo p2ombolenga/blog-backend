@@ -1,5 +1,6 @@
 import User from "../models/users.model.js";
-import bcrypt from "bcryptjs"; 
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken" 
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -43,7 +44,7 @@ export const createUser = async (req, res) =>{
                 email,
                 password: hashedPassword
             });
-            res.status(201).json({
+            return res.status(201).json({
                 status: "201",
                 message: "User created successfully",
                 data: user
@@ -76,9 +77,22 @@ export const loginUser = async (req, res) => {
                  message: "Incorrect password"
             });
         }
+        
+        const accessToken = jwt.sign({
+            user: {
+                name: existingUser.name,
+                email: existingUser.email,
+                id: existingUser.id,
+            },
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {expiresIn: "15"}
+        ) 
+
         return res.status(200).json({
             status: "200",
-             message: "Login Successfully"
+             message: "Login Successfully",
+             token: accessToken
         });
 
     } catch (error) {
