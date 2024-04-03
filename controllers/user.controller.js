@@ -1,7 +1,7 @@
 import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken" 
-
+import { validateCreateUser } from "../validations/user.validation.js";
 export const getAllUsers = async (req, res) => {
     try {
         const users = await User.find();
@@ -26,7 +26,15 @@ export const getAllUsers = async (req, res) => {
 };
 
 export const createUser = async (req, res) =>{
-        const { name, email, password} = req.body
+    const { error, value } = validateCreateUser(req.body);
+    if(error){
+        return res.status(400).json({
+            status: "400",
+            message: "Validation Error",
+            error: error.message,
+        });
+    }
+        const { name, email, password} = value;
         let existingUser;
         try {
             existingUser = await User.findOne({ email });

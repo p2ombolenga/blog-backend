@@ -14,7 +14,11 @@ const  userChema = new mongoose.Schema({
         type: String,
         require: [true, "Password is required"],
         minlength: 6,
-    }
+    },
+    posts: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "posts",
+    }],
 },
 {
     timestamps: true
