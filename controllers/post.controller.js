@@ -129,3 +129,27 @@ export const updatePost = async (req, res) => {
         });
     }
 };
+
+export const deletePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const post = await Post.findById(id);
+        if(!post){
+            return res.status(404).json({
+                status: "404",
+                message: "Post not found",
+            });
+        }
+        await Post.findByIdAndDelete(id);
+        return res.status(200).json({
+            status: "200",
+            message: "Post Deleted",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "500",
+            message: "Failed to delete post",
+            error: error.message,
+        });
+    }
+};
