@@ -1,6 +1,6 @@
 import Post from "../models/post.model.js"
 import User from "../models/users.model.js"
-import { validateCreatePost } from "../validations/posts.validation.js"
+import { validateCreatePost, validateUpdatePost } from "../validations/posts.validation.js"
 
 // controller to retrieve all posts
 export const getPosts = async (req, res) => {
@@ -23,19 +23,27 @@ export const getPosts = async (req, res) => {
 };
 
 export const getApost = async (req, res) => {
-    const { postId } = req.params;
-    const post = await Post.findById(postId);
-    if(!post){
-        return res.status(404).json({
-            status: "404",
-            message: "Post not found"
+   try {
+        const { id } = req.params;
+        const post = await Post.findById(id);
+        if(!post){
+            return res.status(404).json({
+                status: "404",
+                message: "Post not found",
+            });
+        }
+        return res.status(200).json({
+            status: "200",
+            message: "Single post is retrieved",
+            data: post,
+        }); 
+   } catch (error) {
+        return res.status(500).json({
+            status: "500",
+            message: "Failed to retrieve simple post",
+            error: error.message,
         });
-    }
-    return res.status(200).json({
-        status: "200",
-        message: "Post retrieve -- Here you are",
-        data: post,
-    });
+   }
 };
 
 // controller to create a post
@@ -83,6 +91,40 @@ export const createPost = async (req, res) => {
         return res.status(500).json({
             status:"500",
             message: "Failed to create a new post",
+            error: error.message,
+        });
+    }
+};
+
+export const updatePost = async (req, res) => {
+    const { error, value } = validateUpdatePost(req.body);
+    if(error){
+        return res.status(400).json({
+            status: "400", 
+            message: "Validation error", 
+            error: error.message
+        });
+    } 
+    try{
+        const { id } = req.params;
+        const post = await Post.findById(id);
+        if(!post){
+            return res.status(404).json({
+                status: "404",
+                message: "Post not found",
+            });
+        }
+
+        await Post.findByIdAndUpdate(id, value);
+        return res.status(200).json({
+            status: "200",
+            message: "Post updated",
+        });
+    }
+    catch(error){
+        return res.status(500).json({
+            status:"500",
+            message: "Failed to update a post",
             error: error.message,
         });
     }
