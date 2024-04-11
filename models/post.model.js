@@ -1,5 +1,4 @@
-import { text } from "express";
-import mongoose, { Schema, mongo } from "mongoose"
+import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
     title: {
@@ -16,7 +15,7 @@ const postSchema = new mongoose.Schema({
     },
     user: [{
         type: mongoose.Schema.ObjectId,
-        ref: "users",
+        ref: "User",
         required: true,
     }],
 },
