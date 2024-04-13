@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import { validateCreateUser } from "../validations/user.validation.js";
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().populate({path: "posts", select: "title slug content"});
         if(!users){
             return res.status(404).json({
                 status: "404",
